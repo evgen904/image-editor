@@ -1,28 +1,78 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+  <div id="image-editor" data-url="">
+    <div class="imageEditorApp">
+      <tui-image-editor
+        ref="tuiImageEditor"
+        :include-ui="useDefaultUI"
+        :options="options"
+        @addText="onAddText"
+        @objectMoved="onObjectMoved"
+      >
+      </tui-image-editor>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+// To use the default UI, the svg files for the icons is required.
+import "tui-image-editor/dist/svg/icon-a.svg";
+import "tui-image-editor/dist/svg/icon-b.svg";
+import "tui-image-editor/dist/svg/icon-c.svg";
+import "tui-image-editor/dist/svg/icon-d.svg";
+
+// Load Style Code
+import "tui-image-editor/dist/tui-image-editor.css";
+import "tui-color-picker/dist/tui-color-picker.css";
+
+import ImageEditor from "./ImageEditor";
 
 export default {
-  name: "app",
+  name: "image-editor",
   components: {
-    HelloWorld
+    "tui-image-editor": ImageEditor
+  },
+  created() {
+    let elem = document.getElementById("image-editor");
+    if (elem.getAttribute("data-url") != "") {
+      this.options.includeUI.loadImage.path = elem.getAttribute("data-url");
+    }
+  },
+  data() {
+    return {
+      useDefaultUI: true,
+      options: {
+        includeUI: {
+          loadImage: {
+            path: "",
+            name: "SampleImage"
+          },
+          initMenu: "filter"
+        },
+        cssMaxWidth: 700,
+        cssMaxHeight: 500
+      }
+    };
+  },
+  methods: {
+    onAddText(res) {
+      console.group("addText");
+      console.log("Client Position : ", res.clientPosition);
+      console.log("Origin Position : ", res.originPosition);
+      console.groupEnd();
+    },
+    onObjectMoved(res) {
+      console.group("objectMoved");
+      console.log("Left : ", res.left);
+      console.log("Top : ", res.top);
+      console.groupEnd();
+    }
   }
 };
 </script>
 
 <style lang="scss">
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+.imageEditorApp {
+  width: 1000px;
+  height: 800px;
 }
 </style>
