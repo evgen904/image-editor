@@ -10,6 +10,7 @@
       >
       </tui-image-editor>
     </div>
+    <button @click="loadImg">click</button>
   </div>
 </template>
 
@@ -43,7 +44,8 @@ export default {
       options: {
         includeUI: {
           loadImage: {
-            path: "",
+            path:
+              "https://static.sutochno.ru/doc/files/objects/0/665/561/big/5d2caa0682c9e.jpg",
             name: "SampleImage"
           },
           initMenu: "filter"
@@ -65,6 +67,23 @@ export default {
       console.log("Left : ", res.left);
       console.log("Top : ", res.top);
       console.groupEnd();
+    },
+    loadImg(event) {
+      console.log(123);
+      this.$refs.tuiImageEditor
+        .invoke(
+          "loadImageFromURL",
+          "https://static.sutochno.ru/doc/files/objects/0/665/561/big/5d2c93b63eea9.jpg",
+          "My sample image"
+        )
+        .then(() => {
+          this.$refs.tuiImageEditor.invoke("resizeCanvasDimension", {
+            width: 500,
+            height: 400
+          });
+        });
+
+      //$0.toDataURL()
     }
   }
 };
