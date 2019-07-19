@@ -37,4 +37,12 @@ npm run test:unit
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
-"# image-editor" 
+"# image-editor"
+
+---
+
+document.dispatchEvent(new CustomEvent("tuiImageEditor--urlImage", {
+    detail: {
+        urlImage: "https://static.sutochno.ru/doc/files/objects/0/665/561/big/5d2caa0682c9e.jpg"
+    }
+}));
