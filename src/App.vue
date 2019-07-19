@@ -1,16 +1,19 @@
 <template>
-  <div id="image-editor" data-url="">
+  <div id="image-editor">
     <div class="imageEditorApp">
       <tui-image-editor
         ref="tuiImageEditor"
         :include-ui="useDefaultUI"
         :options="options"
-        @addText="onAddText"
-        @objectMoved="onObjectMoved"
       >
       </tui-image-editor>
     </div>
-    <button @click="loadImg">click</button>
+    <!--<input-->
+    <!--type="text"-->
+    <!--v-model="urlImage"-->
+    <!--value="https://static.sutochno.ru/doc/files/objects/0/665/561/big/5d2caa0682c9e.jpg"-->
+    <!--/>-->
+    <!--<button @click="loadImage" class="js-image-editor-load">Загрузить</button>-->
   </div>
 </template>
 
@@ -32,10 +35,39 @@ export default {
   components: {
     "tui-image-editor": ImageEditor
   },
-  created() {
-    let elem = document.getElementById("image-editor");
-    if (elem.getAttribute("data-url") != "") {
-      this.options.includeUI.loadImage.path = elem.getAttribute("data-url");
+  mounted() {
+    let _this = this;
+    document.addEventListener("tuiImageEditor--urlImage", e => {
+      //console.log(e.detail.urlImage)
+      _this.urlImage = e.detail.urlImage;
+    });
+    console.log(this.urlImage, _this.urlImage);
+
+    setTimeout(
+      () =>
+        document.dispatchEvent(
+          new CustomEvent("tuiImageEditor--urlImage", {
+            detail: {
+              urlImage:
+                "https://raw.githubusercontent.com/evgen904/Calendar/master/src/assets/logo_sutochno.ru.png"
+            }
+          })
+        ),
+      500
+    );
+  },
+  watch: {
+    urlImage(url) {
+      console.log(url);
+      if (!url) return;
+      this.$refs.tuiImageEditor
+        .invoke("loadImageFromURL", url, "My sample image")
+        .then(() => {
+          this.$refs.tuiImageEditor.invoke("resizeCanvasDimension", {
+            width: 700,
+            height: 500
+          });
+        });
     }
   },
   data() {
@@ -45,46 +77,16 @@ export default {
         includeUI: {
           loadImage: {
             path:
-              "https://static.sutochno.ru/doc/files/objects/0/665/561/big/5d2caa0682c9e.jpg",
+              "https://raw.githubusercontent.com/evgen904/Calendar/master/src/assets/logo_sutochno.ru.png",
             name: "SampleImage"
           },
           initMenu: "filter"
         },
         cssMaxWidth: 700,
         cssMaxHeight: 500
-      }
+      },
+      urlImage: null
     };
-  },
-  methods: {
-    onAddText(res) {
-      console.group("addText");
-      console.log("Client Position : ", res.clientPosition);
-      console.log("Origin Position : ", res.originPosition);
-      console.groupEnd();
-    },
-    onObjectMoved(res) {
-      console.group("objectMoved");
-      console.log("Left : ", res.left);
-      console.log("Top : ", res.top);
-      console.groupEnd();
-    },
-    loadImg(event) {
-      console.log(123);
-      this.$refs.tuiImageEditor
-        .invoke(
-          "loadImageFromURL",
-          "https://static.sutochno.ru/doc/files/objects/0/665/561/big/5d2c93b63eea9.jpg",
-          "My sample image"
-        )
-        .then(() => {
-          this.$refs.tuiImageEditor.invoke("resizeCanvasDimension", {
-            width: 500,
-            height: 400
-          });
-        });
-
-      //$0.toDataURL()
-    }
   }
 };
 </script>
@@ -93,5 +95,8 @@ export default {
 .imageEditorApp {
   width: 1000px;
   height: 800px;
+  .tui-image-editor-header-logo {
+    display: none;
+  }
 }
 </style>
